@@ -1,0 +1,18 @@
+{
+    "require": {
+        "guzzlehttp/guzzle": "^7.4",
+        "symfony/cache": "^5.3",
+        "psr/http-client": "^1.0",
+        "symfony/cache-contracts": "^1.1.7"
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-latest",
+        "phpunit/phpunit": "^9",
+        "mockery/mockery": "^1.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "GreatFoods\\APIHandler\\": "src"
+        }
+    }
+}
