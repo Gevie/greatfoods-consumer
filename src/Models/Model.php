@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace GreatFoods\APIHandler\Models;
 
-use GreatFoods\APIHandler\Contracts\Models\Model as ModelInterface;
+use GreatFoods\APIHandler\Contracts\Models\AttributeAccessor;
+use GreatFoods\APIHandler\Contracts\Models\KeyExistsChecks;
+use GreatFoods\APIHandler\Contracts\Models\MetaDataAccessor;
 use GreatFoods\APIHandler\Exceptions\NotFoundException;
 use OutOfBoundsException;
 
- abstract readonly class Model implements ModelInterface
+abstract class Model implements AttributeAccessor, KeyExistsChecks, MetaDataAccessor
 {
     protected array $attributes;
 
@@ -46,7 +48,7 @@ use OutOfBoundsException;
 
     public function getAttribute(string $key): mixed
     {
-        if (! $this->keyExists($key, false)) {
+        if (! $this->keyExists($key)) {
             throw new NotFoundException(sprintf('No attribute with the key "%s" found.', $key));
         }
 
@@ -60,19 +62,20 @@ use OutOfBoundsException;
 
     public function getMetaData(string $key): mixed
     {
-        if (! $this->keyExists($key, true)) {
+        if (! $this->keyExists($key)) {
             throw new NotFoundException(sprintf('No meta data with the key "%s" found.', $key));
         }
 
         return $this->meta[$key];
     }
 
-    protected function keyExists(string $key, bool $meta = false): bool
+    public function keyExists(string $key): bool
     {
-        if ($meta === false) {
-            return array_key_exists($key, $this->attributes);
-        }
+        return array_key_exists($key, $this->attributes);
+    }
 
+    public function keyExistsInMetaData(string $key): bool
+    {
         return array_key_exists($key, $this->meta);
     }
 
@@ -84,7 +87,7 @@ use OutOfBoundsException;
     protected function setData(array $data): void
     {
         foreach ($data as $key => $value) {
-            if ($this->keyExists($key, false)) {
+            if ($this->keyExists($key)) {
                 $this->setAttribute($key, $value);
                 continue;
             }

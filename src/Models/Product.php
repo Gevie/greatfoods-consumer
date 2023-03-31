@@ -12,9 +12,7 @@ class Product extends Model implements ProductInterface
         'id' => null,
         'name' => null
     ];
-
-    protected array $meta = [];
-
+    
     public function getId(): string
     {
         return (string) $this->getAttribute('id');

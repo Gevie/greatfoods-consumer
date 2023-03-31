@@ -10,11 +10,10 @@ class Menu extends Model implements MenuInterface
 {
     protected array $attributes = [
         'id' => null,
-        'name' => null
+        'name' => null,
+        'products' => []
     ];
-
-    protected array $meta = [];
-
+    
     public function getId(): string
     {
         return (string) $this->getAttribute('id');
@@ -23,5 +22,10 @@ class Menu extends Model implements MenuInterface
     public function getName(): string
     {
         return $this->getAttribute('name');
+    }
+
+    public function getProducts(): array
+    {
+        return $this->getAttribute('products');
     }
 }

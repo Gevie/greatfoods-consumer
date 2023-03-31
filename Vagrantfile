@@ -1,7 +1,12 @@
 Vagrant.configure("2") do |config|
+  config.vm.boot_timeout = 3000
   config.vm.box = "bento/ubuntu-20.04"
   config.vm.network "forwarded_port", guest: 80, host: 8080
   config.vm.synced_folder ".", "/data/websites/great-foods-api-handler"
+  config.vm.provider "virtualbox" do |vb|
+    vb.customize ["modifyvm", :id, "--vram", "128"]
+    vb.customize ["modifyvm", :id, "--cableconnected1", "on"]
+  end
   config.vm.provision "shell", inline: <<-SHELL
     ## Basic Provisioning (I would normally use Ansible or similar for this)
 
