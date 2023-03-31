@@ -6,8 +6,11 @@ namespace GreatFoods\APIHandler\Tests\Unit\Services;
 
 use GreatFoods\APIHandler\Contracts\Models\Menu as MenuInterface;
 use GreatFoods\APIHandler\Contracts\Services\Resolvers\TokenResolver as TokenResolverInterface;
+use GreatFoods\APIHandler\Mappers\MenuMapper;
+use GreatFoods\APIHandler\Models\Menu;
 use GreatFoods\APIHandler\Services\MenuService;
 use GuzzleHttp\ClientInterface;
+use Mockery;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 
@@ -16,14 +19,15 @@ class MenuServiceTest extends TestCase
     /**
      * @dataProvider menusProvider
      */
-    public function testGetMenus($menus): void
+    public function testGetMenus(array $menus): void
     {
         // Arrange
-        $client = \Mockery::mock(ClientInterface::class);
-        $tokenResolver = \Mockery::mock(TokenResolverInterface::class);
+        $client = Mockery::mock(ClientInterface::class);
+        $tokenResolver = Mockery::mock(TokenResolverInterface::class);
         $baseUrl = 'https://www.greatfoods.test/api/v1';
+        $menuMapper = Mockery::mock(MenuMapper::class);
 
-        $service = new MenuService($client, $tokenResolver, $baseUrl);
+        $service = new MenuService($client, $tokenResolver, $baseUrl, $menuMapper);
 
         $token = [
             'access_token' => 'mockedaccesstoken',
@@ -38,7 +42,7 @@ class MenuServiceTest extends TestCase
 
 
         $endpoint = sprintf('%s/menus', $baseUrl);
-        $response = \Mockery::mock(ResponseInterface::class);
+        $response = Mockery::mock(ResponseInterface::class);
         $client->shouldReceive('request')
             ->with('GET', $endpoint, [
                 'json' => [],
@@ -51,6 +55,20 @@ class MenuServiceTest extends TestCase
         $response->shouldReceive('getBody')
             ->withNoArgs()
             ->andReturn(json_encode($menus, JSON_THROW_ON_ERROR));
+
+        $mappedMenus = [
+            new Menu(['id' => 1, 'name' => 'Starters']),
+            new Menu(['id' => 2, 'name' => 'Mains']),
+            new Menu(['id' => 3, 'name' => 'Takeaway']),
+            new Menu(['id' => 4, 'name' => 'Delivery']),
+            new Menu(['id' => 5, 'name' => 'Desserts']),
+        ];
+
+        foreach ($menus['data'] as $key => $menu) {
+            $menuMapper->shouldReceive('map')
+                ->with($menu)
+                ->andReturn($mappedMenus[$key]);
+        }
 
         // Act
         $result = $service->get();
@@ -92,7 +110,7 @@ class MenuServiceTest extends TestCase
                         ]
                     ]
                 ]
-            ]
+            ],
         ];
     }
 }

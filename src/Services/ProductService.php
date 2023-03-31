@@ -6,11 +6,23 @@ namespace GreatFoods\APIHandler\Services;
 
 use GreatFoods\APIHandler\Contracts\Models\Product as ProductInterface;
 use GreatFoods\APIHandler\Contracts\Services\ProductService as ProductServiceInterface;
+use GreatFoods\APIHandler\Contracts\Services\Resolvers\TokenResolver as TokenResolverInterface;
 use GreatFoods\APIHandler\Exceptions\NotFoundException;
+use GreatFoods\APIHandler\Mappers\ProductMapper;
 use GreatFoods\APIHandler\Models\Product;
+use GuzzleHttp\ClientInterface;
 
 class ProductService extends ApiService implements ProductServiceInterface
 {
+    public function __construct(
+        protected ClientInterface $client,
+        protected TokenResolverInterface $tokenResolver,
+        protected string $url,
+        protected ProductMapper $productMapper
+    ) {
+        // ...
+    }
+
     public function get(string $menuId): array
     {
         $url = sprintf('menu/%s/products', $menuId);
@@ -20,7 +32,7 @@ class ProductService extends ApiService implements ProductServiceInterface
             throw new NotFoundException(sprintf('Could not find any products for menu "%s".', $menuId));
         }
 
-        return array_map(fn($product) => new Product($product), $response['data']);
+        return array_map(fn($productData) => $this->productMapper->map($productData), $response['data']);
     }
 
     public function update(string $menuId, ProductInterface $product, array $data): bool

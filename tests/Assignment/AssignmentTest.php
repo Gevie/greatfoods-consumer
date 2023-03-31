@@ -5,10 +5,14 @@ declare(strict_types=1);
 namespace GreatFoods\APIHandler\Tests\Assignment;
 
 use GreatFoods\APIHandler\Contracts\Services\Resolvers\TokenResolver as TokenResolverInterface;
+use GreatFoods\APIHandler\Mappers\MenuMapper;
+use GreatFoods\APIHandler\Mappers\ProductMapper;
+use GreatFoods\APIHandler\Models\Menu;
 use GreatFoods\APIHandler\Models\Product;
 use GreatFoods\APIHandler\Services\MenuService;
 use GreatFoods\APIHandler\Services\ProductService;
 use GuzzleHttp\ClientInterface;
+use Mockery;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 
@@ -20,13 +24,15 @@ class AssignmentTest extends TestCase
     public function testScenarioOne(array $menus, array $products): void
     {
         // Arrange
-        $menuClient = \Mockery::mock(ClientInterface::class);
-        $productClient = \Mockery::mock(ClientInterface::class);
-        $tokenResolver = \Mockery::mock(TokenResolverInterface::class);
+        $menuClient = Mockery::mock(ClientInterface::class);
+        $productClient = Mockery::mock(ClientInterface::class);
+        $tokenResolver = Mockery::mock(TokenResolverInterface::class);
         $baseUrl = 'https://www.greatfoods.test/api/v1';
+        $menuMapper = Mockery::mock(MenuMapper::class);
+        $productMapper = Mockery::mock(ProductMapper::class);
 
-        $menuService = new MenuService($menuClient, $tokenResolver, $baseUrl);
-        $productService = new ProductService($productClient, $tokenResolver, $baseUrl);
+        $menuService = new MenuService($menuClient, $tokenResolver, $baseUrl, $menuMapper);
+        $productService = new ProductService($productClient, $tokenResolver, $baseUrl, $productMapper);
 
         $token = [
             'access_token' => 'mockedaccesstoken',
@@ -41,7 +47,7 @@ class AssignmentTest extends TestCase
 
 
         $menuEndpoint = sprintf('%s/menus', $baseUrl);
-        $menuResponse = \Mockery::mock(ResponseInterface::class);
+        $menuResponse = Mockery::mock(ResponseInterface::class);
         $menuClient->shouldReceive('request')
             ->with('GET', $menuEndpoint, [
                 'json' => [],
@@ -56,7 +62,7 @@ class AssignmentTest extends TestCase
             ->andReturn(json_encode($menus, JSON_THROW_ON_ERROR));
 
         $productEndpoint = sprintf('%s/menu/%s/products', $baseUrl, 3);
-        $productResponse = \Mockery::mock(ResponseInterface::class);
+        $productResponse = Mockery::mock(ResponseInterface::class);
         $productClient->shouldReceive('request')
             ->with('GET', $productEndpoint, [
                 'json' => [],
@@ -69,6 +75,32 @@ class AssignmentTest extends TestCase
         $productResponse->shouldReceive('getBody')
             ->withNoArgs()
             ->andReturn(json_encode($products, JSON_THROW_ON_ERROR));
+
+        $mappedMenus = [
+            new Menu(['id' => 1, 'name' => 'Starters']),
+            new Menu(['id' => 2, 'name' => 'Mains']),
+            new Menu(['id' => 3, 'name' => 'Takeaway']),
+            new Menu(['id' => 4, 'name' => 'Delivery']),
+            new Menu(['id' => 5, 'name' => 'Desserts']),
+        ];
+
+        foreach ($menus['data'] as $key => $menu) {
+            $menuMapper->shouldReceive('map')
+                ->with($menu)
+                ->andReturn($mappedMenus[$key]);
+        }
+
+        $mappedProducts = [
+            new Product(['id' => 4, 'name' => 'Burger']),
+            new Product(['id' => 5, 'name' => 'Chips']),
+            new Product(['id' => 99, 'name' => 'Lasagne']),
+        ];
+
+        foreach($products['data'] as $key => $product) {
+            $productMapper->shouldReceive('map')
+                ->with($product)
+                ->andReturn($mappedProducts[$key]);
+        }
 
         // Act
         $menus = $menuService->get();
@@ -107,11 +139,12 @@ class AssignmentTest extends TestCase
     {
         $product = new Product($product);
 
-        $client = \Mockery::mock(ClientInterface::class);
-        $tokenResolver = \Mockery::mock(TokenResolverInterface::class);
+        $client = Mockery::mock(ClientInterface::class);
+        $tokenResolver = Mockery::mock(TokenResolverInterface::class);
         $baseUrl = 'https://www.greatfoods.test/api/v1';
+        $productMapper = Mockery::mock(ProductMapper::class);
 
-        $service = new ProductService($client, $tokenResolver, $baseUrl);
+        $service = new ProductService($client, $tokenResolver, $baseUrl, $productMapper);
 
         $token = [
             'access_token' => 'mockedaccesstoken',
@@ -132,7 +165,7 @@ class AssignmentTest extends TestCase
         ];
 
         $endpoint = sprintf('%s/menu/%s/product/%s', $baseUrl, $menuId, $product->getId());
-        $response = \Mockery::mock(ResponseInterface::class);
+        $response = Mockery::mock(ResponseInterface::class);
         $client->shouldReceive('request')
             ->with('PUT', $endpoint, [
                 'json' => $data,
