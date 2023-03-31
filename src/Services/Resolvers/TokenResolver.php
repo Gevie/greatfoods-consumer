@@ -37,7 +37,7 @@ class TokenResolver implements TokenResolverInterface
 
     public function getToken(): array
     {
-        return $this->cache->get('bearer_token', static function(ItemInterface $item): array {
+        return $this->cache->get('bearer_token', function(ItemInterface $item): array {
             $url = sprintf('%s/%s', $this->authDetails['base_url'], $this->authDetails['auth_endpoint']);
 
             try {

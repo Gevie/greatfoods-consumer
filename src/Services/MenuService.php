@@ -29,6 +29,9 @@ class MenuService extends ApiService implements MenuServiceInterface
             throw new NotFoundException('Could not find any menus.');
         }
 
-        return array_map(fn($menuData) => $this->menuMapper->map($menuData), $response['data']);
+        return array_map(
+            fn($menuData) => $this->menuMapper->map($menuData), 
+            $response['data']
+        );
     }
 }
