@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace GreatFoods\APIHandler\Tests\Assignment;
 
-use GreatFoods\APIHandler\Contracts\Models\Menu as MenuInterface;
 use GreatFoods\APIHandler\Contracts\Services\Resolvers\TokenResolver as TokenResolverInterface;
 use GreatFoods\APIHandler\Models\Product;
 use GreatFoods\APIHandler\Services\MenuService;
@@ -13,22 +12,10 @@ use GuzzleHttp\ClientInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 
-/**
- * AssignmentTest Class
- *
- * @package GreatFoods\APIHandler\Tests\Assignment
- * @author Stephen Speakman <hellospeakman@gmail.com>
- */
 class AssignmentTest extends TestCase
 {
     /**
-     * Run the first scenario as a test
-     *
      * @dataProvider scenarioOneProvider
-     * @param array $menus The menus
-     * @param array $products The products
-     *
-     * @return void
      */
     public function testScenarioOne(array $menus, array $products): void
     {
@@ -114,12 +101,7 @@ class AssignmentTest extends TestCase
     }
 
     /**
-     * Runs the scenario two test
-     *
      * @dataProvider scenarioTwoProvider
-     * @param array $product The product
-     *
-     * @return void
      */
     public function testScenarioTwo(array $product): void
     {
@@ -175,11 +157,6 @@ class AssignmentTest extends TestCase
         print("Product Updated Successfully.");
     }
 
-    /**
-     * Provides data for scenario one
-     *
-     * @return array
-     */
     public function scenarioOneProvider(): array
     {
         return [
@@ -228,11 +205,6 @@ class AssignmentTest extends TestCase
         ];
     }
 
-    /**
-     * Provides data for scenario two
-     *
-     * @return array
-     */
     public function scenarioTwoProvider(): array
     {
         return [

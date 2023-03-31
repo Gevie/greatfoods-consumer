@@ -11,24 +11,14 @@ use GuzzleHttp\ClientInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 
-/**
- * MenuServiceTest Class
- *
- * @package GreatFoods\APIHandler\Tests\Unit\Services
- * @author Stephen Speakman <hellospeakman@gmail.com>
- */
 class MenuServiceTest extends TestCase
 {
     /**
-     * Test the get() method
-     *
      * @dataProvider menusProvider
-     *
-     * @return void
      */
     public function testGetMenus($menus): void
     {
-        // Give
+        // Arrange
         $client = \Mockery::mock(ClientInterface::class);
         $tokenResolver = \Mockery::mock(TokenResolverInterface::class);
         $baseUrl = 'https://www.greatfoods.test/api/v1';
@@ -62,10 +52,10 @@ class MenuServiceTest extends TestCase
             ->withNoArgs()
             ->andReturn(json_encode($menus, JSON_THROW_ON_ERROR));
 
-        // When
+        // Act
         $result = $service->get();
 
-        // Then
+        // Assert
         $this->assertIsArray($result);
         foreach ($result as $key => $menu) {
             $this->assertInstanceOf(MenuInterface::class, $menu);

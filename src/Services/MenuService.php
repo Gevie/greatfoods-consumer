@@ -16,11 +16,6 @@ use GreatFoods\APIHandler\Models\Menu;
  */
 class MenuService extends ApiService implements MenuServiceInterface
 {
-    /**
-     * Get all the menus for Great Foods
-     *
-     * @return array An array of menu models
-     */
     public function get(): array
     {
         $response = $this->call('GET', 'menus');

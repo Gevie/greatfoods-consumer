@@ -21,15 +21,11 @@ use Psr\Http\Message\ResponseInterface;
 class ProductServiceTest extends TestCase
 {
     /**
-     * Test the get() method
-     *
      * @dataProvider productsProvider
-     *
-     * @return void
      */
     public function testGet($products): void
     {
-        // Give
+        // Arrange
         $client = \Mockery::mock(ClientInterface::class);
         $tokenResolver = \Mockery::mock(TokenResolverInterface::class);
         $baseUrl = 'https://www.greatfoods.test/api/v1';
@@ -64,10 +60,10 @@ class ProductServiceTest extends TestCase
             ->withNoArgs()
             ->andReturn(json_encode($products, JSON_THROW_ON_ERROR));
 
-        // When
+        // Act
         $result = $service->get((string) $menuId);
 
-        // Then
+        // Assert
         $this->assertIsArray($result);
         foreach ($result as $key => $product) {
             $this->assertInstanceOf(ProductInterface::class, $product);
@@ -76,13 +72,9 @@ class ProductServiceTest extends TestCase
         }
     }
 
-    /**
-     * Test the update method
-     *
-     * @return void
-     */
     public function testUpdate(): void
     {
+        // Arrange
         $product = new Product([
             'id' => 1,
             'name' => 'Large Pizza'
@@ -127,19 +119,14 @@ class ProductServiceTest extends TestCase
             ->withNoArgs()
             ->andReturn(json_encode([], JSON_THROW_ON_ERROR));
 
-        // When
+        // Act
         $result = $service->update((string) $menuId, $product, $data);
 
-        // Then
+        // Assert
         $this->assertIsBool($result);
         $this->assertTrue($result);
     }
 
-    /**
-     * Products data provider
-     *
-     * @return array
-     */
     public function productsProvider(): array
     {
         return [

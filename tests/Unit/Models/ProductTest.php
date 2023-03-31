@@ -16,33 +16,24 @@ use PHPUnit\Framework\TestCase;
  */
 class ProductTest extends TestCase
 {
-    /**
-     * Test the instance of Product
-     *
-     * @return void
-     */
     public function testInstance(): void
     {
-        // Give
+        // Arrange
         $data = [
             'id' => 1,
             'name' => 'Large Pizza'
         ];
 
+        // Act
         $model = new Product($data);
 
-        // Then
+        // Assert
         $this->assertInstanceOf(ProductInterface::class, $model);
     }
 
-    /**
-     * Test the getId method
-     *
-     * @return void
-     */
     public function testGetId(): void
     {
-        // Give
+        // Arrange
         $data = [
             'id' => 1,
             'name' => 'Large Pizza'
@@ -50,22 +41,17 @@ class ProductTest extends TestCase
 
         $model = new Product($data);
 
-        // When
+        // Act
         $id = $model->getId();
 
-        // Then
+        // Assert
         $this->assertIsString($id);
         $this->assertEquals($id, (string) $data['id']);
     }
 
-    /**
-     * Test the getName() method
-     *
-     * @return void
-     */
     public function testGetName(): void
     {
-        // Give
+        // Arrange
         $data = [
             'id' => 1,
             'name' => 'Large Pizza'
@@ -73,10 +59,10 @@ class ProductTest extends TestCase
 
         $model = new Product($data);
 
-        // When
+        // Act
         $name = $model->getName();
 
-        // Then
+        // Assert
         $this->assertIsString($name);
         $this->assertEquals($name, $data['name']);
     }

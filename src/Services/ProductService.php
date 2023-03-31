@@ -17,15 +17,6 @@ use GreatFoods\APIHandler\Models\Product;
  */
 class ProductService extends ApiService implements ProductServiceInterface
 {
-    /**
-     * Gets products by menu id
-     *
-     * @param string $menuId The id of the menu to request
-     *
-     * @return array An array of the product models
-     *
-     * @throws NotFoundException If no products could be found
-     */
     public function get(string $menuId): array
     {
         $url = sprintf('menu/%s/products', $menuId);
@@ -43,15 +34,6 @@ class ProductService extends ApiService implements ProductServiceInterface
         return $products;
     }
 
-    /**
-     * Updates a product for a given menu
-     *
-     * @param string $menuId The id of the menu to update
-     * @param ProductInterface $product The product to update
-     * @param array $data The new data to assign
-     *
-     * @return bool True on success, exception from call method on failure
-     */
     public function update(string $menuId, ProductInterface $product, array $data): bool
     {
         $url = sprintf('menu/%s/product/%s', $menuId, $product->getId());

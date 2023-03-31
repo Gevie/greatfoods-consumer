@@ -11,21 +11,8 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use JsonException;
 
-/**
- * ApiService Class
- *
- * @package GreatFoods\APIHandler\Services
- * @author Stephen Speakman <hellospeakman@gmail.com>
- */
 abstract class ApiService implements ApiServiceInterface
 {
-    /**
-     * Constructor
-     *
-     * @param ClientInterface $client The HTTP client
-     * @param TokenResolverInterface $tokenResolver The token resolver
-     * @param string $url The API url
-     */
     public function __construct(
         protected ClientInterface $client,
         protected TokenResolverInterface $tokenResolver,
@@ -34,18 +21,6 @@ abstract class ApiService implements ApiServiceInterface
         // ...
     }
 
-    /**
-     * Send a request and return the response body
-     *
-     * @param string $method The request method to use (i.e. GET, PUT)
-     * @param string $endpoint The endpoint to call
-     * @param array $data The data to send
-     *
-     * @return array The response
-     *
-     * @throws RequestException If the guzzle request failed
-     * @throws RequestException If the response could not be decoded
-     */
     public function call(string $method, string $endpoint, array $data = []): array
     {
         $url = sprintf('%s/%s', $this->url, $endpoint);

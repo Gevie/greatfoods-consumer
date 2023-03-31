@@ -13,21 +13,8 @@ use JsonException;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
-/**
- * TokenResolver Class
- *
- * @package GreatFoods\APIHandler\Services\Resolvers
- * @author Stephen Speakman <hellospeakman@gmail.com>
- */
 class TokenResolver implements TokenResolverInterface
 {
-    /**
-     * Constructor.
-     *
-     * @param AdapterInterface $cache The cache adapter
-     * @param ClientInterface $client The HTTP client
-     * @param array $authDetails The authentication details
-     */
     public function __construct(
         protected AdapterInterface $cache,
         protected ClientInterface $client,
@@ -36,13 +23,6 @@ class TokenResolver implements TokenResolverInterface
         $this->validateAuthDetails();
     }
 
-    /**
-     * Validates that the authDetails array has all required keys.
-     *
-     * @return void
-     * 
-     * @throws InvalidArgumentException If any of the required keys are missing
-     */
     protected function validateAuthDetails(): void
     {
         $missingAuthDetails = array_diff(self::REQUIRED_AUTH_DETAILS, array_keys($this->authDetails));
@@ -55,15 +35,6 @@ class TokenResolver implements TokenResolverInterface
         }
     }
 
-    /**
-     * Gets the access token for the API.
-     *  Loads from cache otherwise make a new request
-     *
-     * @return array An array of token details
-     * 
-     * @throws RequestException If the request fails
-     * @throws RequestException If the response could not be decoded
-     */
     public function getToken(): array
     {
         return $this->cache->get('bearer_token', static function(ItemInterface $item): array {
