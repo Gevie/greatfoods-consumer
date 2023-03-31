@@ -29,7 +29,6 @@ Vagrant.configure("2") do |config|
     RESULT=$?
     rm composer-setup.php
     sudo mv composer.phar /usr/local/bin/composer
-    exit $RESULT
 
     # Install from composer.lock file
     cd /data/websites/great-foods-api-handler

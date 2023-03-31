@@ -14,7 +14,7 @@ use GreatFoods\APIHandler\Models\Menu;
  * @package GreatFoods\APIHandler\Services
  * @author Stephen Speakman <hellospeakman@gmail.com>
  */
-class MenuService extends AbstractService implements MenuServiceInterface
+class MenuService extends ApiService implements MenuServiceInterface
 {
     /**
      * Get all the menus for Great Foods

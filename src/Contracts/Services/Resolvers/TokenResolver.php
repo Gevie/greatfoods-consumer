@@ -10,6 +10,14 @@ namespace GreatFoods\APIHandler\Contracts\Services\Resolvers;
  */
 interface TokenResolver
 {
+    public const REQUIRED_AUTH_DETAILS = [
+        'base_url',
+        'auth_endpoint',
+        'client_secret',
+        'client_id',
+        'grant_type'
+    ];
+
     /**
      * Gets the access token for the API
      *

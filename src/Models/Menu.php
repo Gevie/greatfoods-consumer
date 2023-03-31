@@ -12,7 +12,7 @@ use GreatFoods\APIHandler\Contracts\Models\Menu as MenuInterface;
  * @package GreatFoods\APIHandler\Models
  * @author Stephen Speakman <hellospeakman@gmail.com>
  */
-class Menu extends AbstractModel implements MenuInterface
+class Menu extends Model implements MenuInterface
 {
     /**
      * The model attributes

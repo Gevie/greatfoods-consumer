@@ -65,6 +65,7 @@ class MenuServiceTest extends TestCase
         // When
         $result = $service->get();
 
+        // Then
         $this->assertIsArray($result);
         foreach ($result as $key => $menu) {
             $this->assertInstanceOf(MenuInterface::class, $menu);

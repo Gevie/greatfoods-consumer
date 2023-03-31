@@ -12,7 +12,7 @@ use GreatFoods\APIHandler\Contracts\Models\Product as ProductInterface;
  * @package GreatFoods\APIHandler\Models
  * @author Stephen Speakman <hellospeakman@gmail.com>
  */
-class Product extends AbstractModel implements ProductInterface
+class Product extends Model implements ProductInterface
 {
     /**
      * The model attributes

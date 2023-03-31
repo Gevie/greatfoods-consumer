@@ -15,7 +15,7 @@ use GreatFoods\APIHandler\Models\Product;
  * @package GreatFoods\APIHandler\Services
  * @author Stephen Speakman <hellospeakman@gmail.com>
  */
-class ProductService extends AbstractService implements ProductServiceInterface
+class ProductService extends ApiService implements ProductServiceInterface
 {
     /**
      * Gets products by menu id
@@ -56,7 +56,7 @@ class ProductService extends AbstractService implements ProductServiceInterface
     {
         $url = sprintf('menu/%s/product/%s', $menuId, $product->getId());
 
-        // No info on the response so this is an unused variable
+        // Quirk of the test, there is no info in the response so this is an unused variable
         $response = $this->call('PUT', $url, [
             'id' => $product->getId(),
             'name' => $data['name'] ?? $product->getName()

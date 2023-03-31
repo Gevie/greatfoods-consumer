@@ -32,7 +32,7 @@ class AssignmentTest extends TestCase
      */
     public function testScenarioOne(array $menus, array $products): void
     {
-        // Give
+        // Arrange
         $menuClient = \Mockery::mock(ClientInterface::class);
         $productClient = \Mockery::mock(ClientInterface::class);
         $tokenResolver = \Mockery::mock(TokenResolverInterface::class);
@@ -83,7 +83,7 @@ class AssignmentTest extends TestCase
             ->withNoArgs()
             ->andReturn(json_encode($products, JSON_THROW_ON_ERROR));
 
-        // When
+        // Act
         $menus = $menuService->get();
 
         $takeaway = null;

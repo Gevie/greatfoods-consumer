@@ -8,6 +8,7 @@ use GreatFoods\APIHandler\Contracts\Services\Resolvers\TokenResolver as TokenRes
 use GreatFoods\APIHandler\Exceptions\RequestException;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
+use InvalidArgumentException;
 use JsonException;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -15,82 +16,65 @@ use Symfony\Contracts\Cache\ItemInterface;
 /**
  * TokenResolver Class
  *
- * @package GreatFoods\APIHandler\Services\Resolvers;
+ * @package GreatFoods\APIHandler\Services\Resolvers
  * @author Stephen Speakman <hellospeakman@gmail.com>
  */
 class TokenResolver implements TokenResolverInterface
 {
     /**
-     * The cache adapter
-     *
-     * @var AdapterInterface
-     */
-    protected AdapterInterface $cache;
-
-    /**
-     * The Guzzle client
-     *
-     * @var ClientInterface
-     */
-    protected ClientInterface $client;
-
-    /**
-     * An array of auth details
-     *
-     * @var array
-     */
-    protected array $authDetails;
-
-    /**
-     * Constructor
+     * Constructor.
      *
      * @param AdapterInterface $cache The cache adapter
-     * @param ClientInterface $client The Guzzle client
-     * @param string $baseUrl The API base url
-     * @param string $authEndpoint The API auth endpoint
-     * @param string $clientSecret The client secret
-     * @param string $clientId The client id
-     * @param string $grantType The grant type
+     * @param ClientInterface $client The HTTP client
+     * @param array $authDetails The authentication details
      */
     public function __construct(
-        AdapterInterface $cache,
-        ClientInterface $client,
-        string $baseUrl,
-        string $authEndpoint,
-        string $clientSecret,
-        string $clientId,
-        string $grantType
+        protected AdapterInterface $cache,
+        protected ClientInterface $client,
+        protected array $authDetails
     ) {
-        $this->cache = $cache;
-        $this->client = $client;
-        $this->authDetails = [
-            'base_url' => $baseUrl,
-            'auth_endpoint' => $authEndpoint,
-            'client_secret' => $clientSecret,
-            'client_id' => $clientId,
-            'grant_type' => $grantType
-        ];
+        $this->validateAuthDetails();
     }
 
     /**
-     * Gets the access token for the API
+     * Validates that the authDetails array has all required keys.
+     *
+     * @return void
+     * 
+     * @throws InvalidArgumentException If any of the required keys are missing
+     */
+    protected function validateAuthDetails(): void
+    {
+        $missingAuthDetails = array_diff(self::REQUIRED_AUTH_DETAILS, array_keys($this->authDetails));
+
+        if ($missingAuthDetails) {
+            throw new InvalidArgumentException(sprintf(
+                'The following required keys are missing from the $authDetails array: "%s"',
+                implode(', ', $missingAuthDetails)
+            ));
+        }
+    }
+
+    /**
+     * Gets the access token for the API.
      *  Loads from cache otherwise make a new request
      *
      * @return array An array of token details
+     * 
+     * @throws RequestException If the request fails
+     * @throws RequestException If the response could not be decoded
      */
     public function getToken(): array
     {
-        $self =& $this;
-
-        return $this->cache->get('bearer_token', static function(ItemInterface $item) use (&$self) {
-            $url = sprintf('%s/%s', $self->authDetails['base_url'], $self->authDetails['auth_endpoint']);
+        return $this->cache->get('bearer_token', static function(ItemInterface $item): array {
+            $url = sprintf('%s/%s', $this->authDetails['base_url'], $this->authDetails['auth_endpoint']);
 
             try {
-                $response = $self->client->request('POST', $url, [
+                $response = $this->client->request('POST', $url, [
                     'json' => [
-                        'client_secret' => $self->authDetails['client_secret'],
-                        'client_id' => $self->authDetails['client_id'],
-                        'grant_type' => $self->authDetails['grant_type']
+                        'client_secret' => $this->authDetails['client_secret'],
+                        'client_id' => $this->authDetails['client_id'],
+                        'grant_type' => $this->authDetails['grant_type']
                     ],
                     'headers' => [
                         'Content-Type' => 'application/x-www-form-urlencoded'
@@ -106,7 +90,6 @@ class TokenResolver implements TokenResolverInterface
                 throw new RequestException('Could not decode json response body.');
             }
 
-            // IDE will complain about this since it isn't a void return type
             $item->expiresAfter((int) $token['expires_in']);
 
             return $token;
