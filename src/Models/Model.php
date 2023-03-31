@@ -8,7 +8,7 @@ use GreatFoods\APIHandler\Contracts\Models\Model as ModelInterface;
 use GreatFoods\APIHandler\Exceptions\NotFoundException;
 use OutOfBoundsException;
 
- class Model implements ModelInterface
+ abstract readonly class Model implements ModelInterface
 {
     protected array $attributes;
 

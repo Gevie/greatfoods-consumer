@@ -9,12 +9,6 @@ use GreatFoods\APIHandler\Contracts\Services\ProductService as ProductServiceInt
 use GreatFoods\APIHandler\Exceptions\NotFoundException;
 use GreatFoods\APIHandler\Models\Product;
 
-/**
- * ProductService Class
- *
- * @package GreatFoods\APIHandler\Services
- * @author Stephen Speakman <hellospeakman@gmail.com>
- */
 class ProductService extends ApiService implements ProductServiceInterface
 {
     public function get(string $menuId): array
@@ -26,12 +20,7 @@ class ProductService extends ApiService implements ProductServiceInterface
             throw new NotFoundException(sprintf('Could not find any products for menu "%s".', $menuId));
         }
 
-        $products = [];
-        foreach ($response['data'] as $product) {
-            $products[] = new Product($product);
-        }
-
-        return $products;
+        return array_map(fn($product) => new Product($product), $response['data']);
     }
 
     public function update(string $menuId, ProductInterface $product, array $data): bool

@@ -6,12 +6,13 @@ Vagrant.configure("2") do |config|
     ## Basic Provisioning (I would normally use Ansible or similar for this)
 
     # Install PHP Dependencies
-    sudo apt-get update
+    sudo apt update
+    sudo apt upgrade
     sudo apt-get install -y lsb-release ca-certificates apt-transport-https software-properties-common
     sudo add-apt-repository ppa:ondrej/php
-    sudo apt-get update
-    sudo apt-get install -y php8.0
-    sudo apt-get install -y php8.0-mbstring php8.0-xml
+    sudo apt update
+    sudo apt-get install -y php8.2
+    sudo apt-get install -y php8.2-mbstring php8.2-xml
 
     # Install Composer
     php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"

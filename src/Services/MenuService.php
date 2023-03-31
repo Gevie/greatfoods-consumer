@@ -8,12 +8,6 @@ use GreatFoods\APIHandler\Contracts\Services\MenuService as MenuServiceInterface
 use GreatFoods\APIHandler\Exceptions\NotFoundException;
 use GreatFoods\APIHandler\Models\Menu;
 
-/**
- * MenuService Class
- *
- * @package GreatFoods\APIHandler\Services
- * @author Stephen Speakman <hellospeakman@gmail.com>
- */
 class MenuService extends ApiService implements MenuServiceInterface
 {
     public function get(): array
@@ -24,11 +18,6 @@ class MenuService extends ApiService implements MenuServiceInterface
             throw new NotFoundException('Could not find any menus.');
         }
 
-        $menus = [];
-        foreach ($response['data'] as $menu) {
-            $menus[] = new Menu($menu);
-        }
-
-        return $menus;
+        return array_map(fn($menu) => new Menu($menu), $response['data']);
     }
 }
